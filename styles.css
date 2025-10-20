@@ -1,0 +1,516 @@
+body {
+  background: #A8E6CF;
+  font-family: Arial, sans-serif;
+  color: #474747;
+  margin: 0;
+  padding: 0 20px;
+}
+header {
+  text-align: center;
+  padding: 10px 0;
+  background: #fff;
+  box-shadow: 0 1px 8px #ccc;
+  border-bottom: 2px solid #56C596;
+}
+h1 {
+  color: #56C596;
+  margin-bottom: 5px;
+}
+#telegram-user {
+  color: #FF6F61;
+  font-weight: 600;
+}
+.category-menu {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin: 15px 0;
+}
+#categories {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap; /* Разрешаем перенос кнопок на новую строку */
+  gap: 8px; /* Добавляем расстояние между кнопками и рядами */
+  margin-bottom: 20px;
+  /* Убираем горизонтальный скролл */
+  /* overflow-x: auto; */
+  /* padding-bottom: 10px; */
+}
+
+.category-btn {
+  background: #56C596;
+  border: none;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 20px;
+  padding: 8px 16px;
+  margin: 0; /* Убираем внешние отступы, так как теперь используем gap */
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+.category-btn:hover {
+  background: #FF6F61;
+}
+
+.category-btn.active {
+  background: #FF6F61;
+}
+
+.my-products-section button {
+  background-color: #FF6F61;
+  border: none;
+  color: white;
+  padding: 14px 26px;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+.popular-recipes {
+  background: #FFFFFF;
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 600px;
+  margin: 0 auto 50px auto;
+  box-shadow: 0 0 12px #ddd;
+}
+.recipe-card {
+  border-bottom: 1px solid #eee;
+  padding: 12px 0;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+  cursor: pointer; /* Указывает, что на карточку можно нажать */
+  transition: transform 0.2s;
+}
+
+.recipe-card:hover {
+  transform: translateY(-5px); /* Небольшой эффект при наведении */
+}
+
+.recipe-card img {
+  height: 180px;
+  object-fit: cover;
+}
+
+.recipe-card-content {
+  padding: 15px;
+}
+
+.recipe-card-content h2 {
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.recipe-card-content p {
+  margin: 0;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Стили для модального окна */
+.modal {
+  display: none; /* По умолчанию скрыто */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.6);
+  padding-top: 20px;
+}
+
+#search {
+    flex-grow: 1;
+    margin-right: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Возвращаем Flexbox для контейнера рецептов */
+#recipes {
+  display: flex;
+  flex-direction: column; /* Карточки будут идти друг под другом */
+  gap: 15px;
+}
+
+/* Стили для карточки рецепта */
+.recipe-card {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  /* width и margin не нужны, так как flex-direction: column */
+}
+
+.recipe-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+}
+
+/* Убираем старые стили для картинки в карточке */
+.recipe-card img { }
+
+/* Контейнер для текста в карточке */
+.recipe-card-text {
+  flex: 1; /* Занимает все доступное место */
+  padding-right: 15px; /* Отступ от картинки */
+}
+
+.recipe-card-text h3 {
+  margin: 0 0 5px 0;
+  padding: 0;
+  font-size: 1.1em;
+}
+
+.recipe-card-text p {
+  margin: 0;
+  padding: 0;
+  color: #666;
+  font-size: 0.9em;
+}
+
+/* Новые стили для картинки в карточке */
+.recipe-card-image {
+  width: 100px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0; /* Запрещаем картинке сжиматься */
+}
+
+
+/*
+ * Стили модального окна
+ */
+.modal-content {
+  background-color: #fff;
+  margin: 10% auto;
+  padding: 25px;
+  border: 1px solid #888;
+  width: 80%;
+  max-width: 700px; /* Немного уменьшим ширину */
+  border-radius: 10px;
+  position: relative;
+  /* display: flex; */ /* УБИРАЕМ FLEX, чтобы все было в столбик */
+  /* align-items: flex-start; */
+}
+
+.close-button {
+  color: #aaa;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close-button:hover,
+.close-button:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Новый контейнер для изображения */
+.modal-image-container {
+  /* flex: 1; */
+  /* padding-right: 25px; */
+}
+
+/* Новый контейнер для текста */
+.modal-text-container {
+  /* flex: 2; */
+}
+
+/* Возвращаем вид картинки в модальном окне (сверху) */
+#modal-recipe-image {
+  width: 100%;
+  height: auto;
+  max-height: 300px; /* Ограничим высоту, чтобы не была слишком большой */
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 20px; /* Добавляем отступ снизу */
+}
+
+#modal-recipe-name {
+  margin-top: 0;
+}
+
+#modal-recipe-ingredients {
+  list-style-type: disc;
+  padding-left: 20px;
+}
+
+#modal-recipe-instructions {
+  white-space: pre-wrap; /* Сохраняет переносы строк в тексте инструкций */
+}
+
+/* Новые стили для тегов в модальном окне */
+.tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.tag {
+    background-color: #e0e0e0;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.9em;
+}
+
+.recipe-card:last-child {
+  border-bottom: none;
+}
+.category-label {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #56C596;
+}
+
+#backBtn, #backToMainBtn {
+  background-color: #6c757d;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 20px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#productsForm {
+  background: #fff;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+#productsForm label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 1.1rem;
+}
+
+/* Admin Panel Styles */
+.admin-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 0 12px #ddd;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.form-actions button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.form-actions button[type="submit"] {
+  background-color: #56C596;
+}
+
+.form-actions button[type="button"] {
+  background-color: #6c757d;
+}
+
+.recipe-list-admin {
+  margin-top: 30px;
+}
+
+.recipe-item-admin {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.recipe-item-admin:last-child {
+  border-bottom: none;
+}
+
+.recipe-item-admin button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.recipe-item-admin .edit-btn {
+  background-color: #ffc107;
+}
+
+.recipe-item-admin .delete-btn {
+  background-color: #dc3545;
+}
+
+/* Search Bar Styles */
+.search-container {
+  max-width: 600px;
+  margin: 15px auto;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+/* Стили для страницы продуктов */
+/* Чипы продуктов */
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 20px;
+}
+.chip {
+  background: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.chip:hover { background: #e8e8e8; }
+.chip.selected { background: #56C596; color: #fff; border-color: #56C596; }
+.chip.small { font-size: 12px; padding: 4px 8px; }
+
+/* Кнопки управления */
+.button {
+  background-color: #56C596;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 18px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: background-color 0.2s ease;
+}
+.button:hover { background-color: #FF6F61; }
+
+/* Контейнер продуктов */
+#products-panel { margin-bottom: 10px; }
+.products-controls { margin-bottom: 10px; }
+
+.product-button {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.product-button.selected {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+}
+
+#filter-recipes-btn {
+    display: block;
+    width: 200px;
+    margin: 20px auto;
+    padding: 15px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.controls .button {
+     padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color .3s;
+    margin-right: 10px;
+}
+
+.controls .button:hover {
+    background-color: #0056b3;
+}
+
+/* Saved sets and toggle */
+.saved-sets { margin-top: 10px; }
+.saved-sets-label { display: inline-block; margin-bottom: 6px; color: #474747; font-weight: 600; }
+.toggle { display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; }
+.toggle input { transform: scale(1.1); }

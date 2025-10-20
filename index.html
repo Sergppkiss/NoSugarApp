@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NoSugar App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Рецепты</h1>
+    
+    <div class="controls">
+      <input type="text" id="search-bar" placeholder="Поиск по названию...">
+      <a href="admin.html" class="admin-link" id="admin-link" style="display:none;">Админ-панель</a>
+    </div>
+
+    <div id="products-panel">
+      <div class="products-controls">
+        <button id="select-all-btn" class="button">Выбрать все</button>
+        <button id="clear-filter-btn" class="button">Сбросить фильтр</button>
+        <button id="save-set-btn" class="button">Сохранить набор</button>
+        <button id="apply-filter-btn" class="button">Показать рецепты</button>
+        <label class="toggle"><input type="checkbox" id="only-available"><span>Только доступные</span></label>
+      </div>
+      <div id="products-chips" class="chips-container"></div>
+      <div class="saved-sets">
+        <span class="saved-sets-label">Сохранённые наборы:</span>
+        <div id="saved-sets-chips" class="chips-container"></div>
+      </div>
+    </div>
+
+    <div id="category-buttons">
+      <button class="category-btn active" data-category="Все">Все</button>
+      <button class="category-btn" data-category="Завтрак">Завтрак</button>
+      <button class="category-btn" data-category="Обед">Обед</button>
+      <button class="category-btn" data-category="Ужин">Ужин</button>
+      <button class="category-btn" data-category="Десерт">Десерт</button>
+      <button class="category-btn" data-category="Перекус">Перекус</button>
+    </div>
+
+    <div id="recipes" class="recipes-container"></div>
+  </div>
+
+  <div id="recipe-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <div class="modal-image-container">
+        <img id="modal-recipe-image" src="" alt="Фото рецепта">
+      </div>
+      <div class="modal-text-container">
+        <h2 id="modal-recipe-name"></h2>
+        <p id="modal-meta"></p>
+        <h3>Ингредиенты:</h3>
+        <ul id="modal-recipe-ingredients"></ul>
+        <h3>Теги для фильтра:</h3>
+        <div id="modal-recipe-tags" class="tags-container"></div>
+        <h3>Приготовление:</h3>
+        <p id="modal-recipe-instructions"></p>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="data.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
