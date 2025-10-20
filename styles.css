@@ -514,3 +514,39 @@ h1 {
 .saved-sets-label { display: inline-block; margin-bottom: 6px; color: #474747; font-weight: 600; }
 .toggle { display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; }
 .toggle input { transform: scale(1.1); }
+
+/* Floating ingredients cart button */
+.cart-button {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: #56C596;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  cursor: pointer;
+  z-index: 900; /* ниже модалок (1000), но поверх контента */
+}
+.cart-button:hover { background-color: #FF6F61; }
+.cart-button .badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background-color: #FF6F61;
+  color: #fff;
+  font-size: 11px;
+  line-height: 16px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+  pointer-events: none;
+}
+.cart-icon { display: block; }

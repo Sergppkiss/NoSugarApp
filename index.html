@@ -7,6 +7,12 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <button id="open-ingredients-btn" class="cart-button" aria-label="Выбор ингредиентов">
+    <svg class="cart-icon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="currentColor" d="M7 18c-.83 0-1.5.67-1.5 1.5S6.17 21 7 21s1.5-.67 1.5-1.5S7.83 18 7 18zm10 0c-.83 0-1.5.67-1.5 1.5S16.17 21 17 21s1.5-.67 1.5-1.5S17.83 18 17 18zM7.16 14.26h9.91c.68 0 1.27-.43 1.47-1.07l2.05-6.62A1.25 1.25 0 0 0 19.39 5H6.21L5.79 3.65A1.25 1.25 0 0 0 4.6 2.8H3a1 1 0 1 0 0 2h1.06l3.03 9.1c.2.64.79 1.06 1.47 1.06zM6.62 7h11.93l-1.64 5.3H7.95L6.62 7z"/>
+    </svg>
+    <span id="ingredients-count" class="badge">0</span>
+  </button>
   <div class="container">
     <h1>Рецепты</h1>
     
@@ -17,16 +23,9 @@
 
     <div id="products-panel">
       <div class="products-controls">
-        <button id="select-all-btn" class="button">Выбрать все</button>
-        <button id="clear-filter-btn" class="button">Сбросить фильтр</button>
-        <button id="save-set-btn" class="button">Сохранить набор</button>
-        <button id="apply-filter-btn" class="button">Показать рецепты</button>
+
         <label class="toggle"><input type="checkbox" id="only-available"><span>Только доступные</span></label>
-      </div>
-      <div id="products-chips" class="chips-container"></div>
-      <div class="saved-sets">
-        <span class="saved-sets-label">Сохранённые наборы:</span>
-        <div id="saved-sets-chips" class="chips-container"></div>
+        <button id="apply-filter-btn" class="button">Показать рецепты</button>
       </div>
     </div>
 
@@ -42,6 +41,7 @@
     <div id="recipes" class="recipes-container"></div>
   </div>
 
+  <!-- Модальное окно рецепта -->
   <div id="recipe-modal" class="modal">
     <div class="modal-content">
       <span class="close-button">&times;</span>
@@ -57,6 +57,22 @@
         <div id="modal-recipe-tags" class="tags-container"></div>
         <h3>Приготовление:</h3>
         <p id="modal-recipe-instructions"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Новое модальное окно выбора ингредиентов -->
+  <div id="ingredients-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-button" id="close-ingredients-modal">&times;</span>
+      <h2>Выбор ингредиентов</h2>
+      <div class="products-controls">
+        <button id="select-all-ingredients-btn" class="button">Выбрать все</button>
+        <button id="clear-ingredients-btn" class="button">Очистить</button>
+      </div>
+      <div id="ingredients-chips-modal" class="chips-container"></div>
+      <div class="form-actions">
+        <button id="save-ingredients-btn" class="button">Сохранить</button>
       </div>
     </div>
   </div>

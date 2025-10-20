@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let onlyAvailable = false;
 
   // Elements
-  const chipsBox = document.getElementById('products-chips');
+  const chipsBox = document.getElementById('ingredients-chips-modal');
   const selectAllBtn = document.getElementById('select-all-btn');
   const clearBtn = document.getElementById('clear-filter-btn');
   const saveSetBtn = document.getElementById('save-set-btn');
@@ -98,6 +98,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const recipesBox = document.getElementById('recipes');
   const savedSetsBox = document.getElementById('saved-sets-chips');
   const onlyAvailableCheckbox = document.getElementById('only-available');
+
+  // Ingredients modal elements
+  const openIngredientsBtn = document.getElementById('open-ingredients-btn');
+  const ingredientsModal = document.getElementById('ingredients-modal');
+  const closeIngredientsModalBtn = document.getElementById('close-ingredients-modal');
+  const selectAllIngredientsBtn = document.getElementById('select-all-ingredients-btn');
+  const clearIngredientsBtn = document.getElementById('clear-ingredients-btn');
+  const saveIngredientsBtn = document.getElementById('save-ingredients-btn');
+  const ingredientsCountEl = document.getElementById('ingredients-count');
 
   const haptic = (style='light') => tg?.HapticFeedback?.impactOccurred(style);
 
@@ -158,9 +167,11 @@ document.addEventListener('DOMContentLoaded', () => {
     chipsBox.innerHTML = allTags.map(tag => `
       <button class="chip ${selectedTags.includes(tag)?'selected':''}" data-tag="${tag}">${capitalize(tag)}</button>
     `).join('');
+    // Обновляем счётчик выбранных ингредиентов
+    if (ingredientsCountEl) ingredientsCountEl.textContent = String(selectedTags.length);
     chipsBox.querySelectorAll('.chip').forEach(btn => {
       btn.addEventListener('click', () => {
-        const tag = btn.dataset.tag;
+        const tag = btn.getAttribute('data-tag');
         if (selectedTags.includes(tag)) {
           selectedTags = selectedTags.filter(t => t !== tag);
           btn.classList.remove('selected');
@@ -170,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         haptic();
         filterAndRender();
+        if (ingredientsCountEl) ingredientsCountEl.textContent = String(selectedTags.length);
       });
     });
   }
@@ -212,6 +224,39 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Controls
+  // Modal open/close
+  openIngredientsBtn?.addEventListener('click', () => {
+    haptic('medium');
+    if (ingredientsModal) ingredientsModal.style.display = 'block';
+  });
+  closeIngredientsModalBtn?.addEventListener('click', () => {
+    if (ingredientsModal) ingredientsModal.style.display = 'none';
+  });
+  window.addEventListener('click', (e) => {
+    if (e.target === ingredientsModal) ingredientsModal.style.display = 'none';
+  });
+
+  // Selection controls inside modal
+  selectAllIngredientsBtn?.addEventListener('click', () => {
+    haptic('medium');
+    selectedTags = [...allTags];
+    renderChips();
+    filterAndRender();
+  });
+
+  clearIngredientsBtn?.addEventListener('click', () => {
+    haptic();
+    selectedTags = [];
+    renderChips();
+    filterAndRender();
+  });
+
+  saveIngredientsBtn?.addEventListener('click', async () => {
+    haptic('medium');
+    await storage.set(storageKey('selectedTags'), JSON.stringify(selectedTags));
+    if (ingredientsModal) ingredientsModal.style.display = 'none';
+    filterAndRender();
+  });
   selectAllBtn?.addEventListener('click', () => {
     haptic('medium');
     selectedTags = [...allTags];
@@ -226,21 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
     filterAndRender();
   });
 
-  saveSetBtn?.addEventListener('click', async () => {
-    haptic('medium');
-    await storage.set(storageKey('selectedTags'), JSON.stringify(selectedTags));
-    const now = new Date();
-    const defaultName = `Набор ${now.toLocaleDateString('ru-RU')} ${now.toLocaleTimeString('ru-RU').slice(0,5)}`;
-    const name = prompt('Имя набора ингредиентов:', defaultName);
-    if (name && name.trim()) {
-      const set = { name: name.trim(), tags: [...selectedTags] };
-      const existingIdx = savedSets.findIndex(s => s.name.toLowerCase() === set.name.toLowerCase());
-      if (existingIdx >= 0) savedSets[existingIdx] = set; else savedSets.push(set);
-      await storage.set(storageKey('savedSets'), JSON.stringify(savedSets));
-      renderSavedSets();
-    }
-  });
-
+  // Removed multi-set saving; selection is saved via modal's "Сохранить"
   applyBtn?.addEventListener('click', () => {
     haptic('light');
     filterAndRender();
