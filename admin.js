@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const recipeCategoryInput = document.getElementById('recipe-category');
     const recipeDescriptionInput = document.getElementById('recipe-description');
     const recipeTagsInput = document.getElementById('recipe-tags');
+    const tagInput = document.getElementById('tag-input');
+    const addTagBtn = document.getElementById('add-tag-btn');
+    const tagsListEl = document.getElementById('tags-list');
     const recipeImageInput = document.getElementById('recipe-image');
     const saveBtn = document.getElementById('save-btn');
     const clearBtn = document.getElementById('clear-btn');
@@ -166,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
             item.className = 'recipe-item-admin';
             item.innerHTML = `
                 <span>${idx+1}. ${r.name}</span>
-                <div>
+                <div class="actions">
                     <button class="edit-btn">Редактировать</button>
                     <button class="delete-btn">Удалить</button>
                 </div>
@@ -185,12 +188,67 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    let tagsState = [];
+    function renderTags() {
+        if (!tagsListEl) return;
+        tagsListEl.innerHTML = '';
+        tagsState.forEach((tag, i) => {
+            const chip = document.createElement('div');
+            chip.className = 'chip';
+            chip.textContent = tag;
+            const editBtn = document.createElement('button');
+            editBtn.className = 'button';
+            editBtn.style.marginLeft = '6px';
+            editBtn.textContent = '✎';
+            editBtn.title = 'Редактировать тег';
+            editBtn.addEventListener('click', () => {
+                const next = prompt('Изменить тег', tag);
+                const v = (next || '').trim();
+                if (!v) return;
+                if (tagsState.some((t, idx) => idx !== i && t.toLowerCase() === v.toLowerCase())) return alert('Такой тег уже есть');
+                tagsState[i] = v;
+                recipeTagsInput.value = tagsState.join(', ');
+                renderTags();
+            });
+            const delBtn = document.createElement('button');
+            delBtn.className = 'button';
+            delBtn.style.marginLeft = '6px';
+            delBtn.textContent = '✕';
+            delBtn.title = 'Удалить тег';
+            delBtn.addEventListener('click', () => {
+                tagsState.splice(i, 1);
+                recipeTagsInput.value = tagsState.join(', ');
+                renderTags();
+            });
+            const wrap = document.createElement('div');
+            wrap.style.display = 'inline-flex';
+            wrap.style.alignItems = 'center';
+            wrap.style.gap = '4px';
+            wrap.appendChild(chip);
+            wrap.appendChild(editBtn);
+            wrap.appendChild(delBtn);
+            tagsListEl.appendChild(wrap);
+        });
+    }
+
+    addTagBtn?.addEventListener('click', () => {
+        const v = (tagInput?.value || '').trim();
+        if (!v) return;
+        if (tagsState.some(t => t.toLowerCase() === v.toLowerCase())) return alert('Такой тег уже добавлен');
+        tagsState.push(v);
+        recipeTagsInput.value = tagsState.join(', ');
+        tagInput.value = '';
+        renderTags();
+    });
+
     function clearForm() {
         recipeIdInput.value = '';
         recipeNameInput.value = '';
         recipeCategoryInput.value = 'Завтрак';
         recipeDescriptionInput.value = '';
         recipeTagsInput.value = '';
+        tagsState = [];
+        renderTags();
         recipeImageInput.value = '';
         document.getElementById('recipe-calories') && (document.getElementById('recipe-calories').value = '');
         document.getElementById('recipe-cooking-time') && (document.getElementById('recipe-cooking-time').value = '');
@@ -204,7 +262,9 @@ document.addEventListener('DOMContentLoaded', () => {
         recipeNameInput.value = r.name || '';
         recipeCategoryInput.value = r.category || 'Завтрак';
         recipeDescriptionInput.value = r.description || '';
-        recipeTagsInput.value = (r.tags || []).join(', ');
+        tagsState = Array.isArray(r.tags) ? [...r.tags] : ((r.tags || '').split(',').map(t=>t.trim()).filter(Boolean));
+        recipeTagsInput.value = tagsState.join(', ');
+        renderTags();
         recipeImageInput.value = r.image || '';
 
         // Новые поля
@@ -229,10 +289,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = recipeNameInput.value.trim();
         const category = recipeCategoryInput.value;
         const description = recipeDescriptionInput.value.trim();
-        const tags = recipeTagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
+        const tags = tagsState.length ? tagsState : recipeTagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
         const image = recipeImageInput.value.trim();
-        if (!name || !category || !description || tags.length === 0 || !image) {
-            alert('Заполните все поля');
+        if (!name || !category || tags.length === 0 || !image) {
+            alert('Заполните обязательные поля: название, категория, теги, изображение');
             return;
         }
         const idxRaw = recipeIdInput.value.trim();

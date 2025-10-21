@@ -161,14 +161,75 @@ document.addEventListener('DOMContentLoaded', () => {
     await maybeAutoLoadGist();
   })();
 
-  // Render tag chips
+  // Категории ингредиентов
+  const TAG_CATEGORY_MAP = {
+    'яйцо': 'Яйца',
+    'яйца': 'Яйца',
+    'помидор': 'Овощи',
+    'томат': 'Овощи',
+    'шампиньон': 'Грибы',
+    'грибы': 'Грибы',
+    'сыр': 'Молочные продукты',
+    'творог': 'Молочные продукты',
+    'кокосовое молоко': 'Молочные продукты',
+    'зелень': 'Зелень',
+    'укроп': 'Зелень',
+    'петрушка': 'Зелень',
+    'курица': 'Мясо',
+    'куриное филе': 'Мясо',
+    'лосось': 'Рыба',
+    'тунец': 'Рыба',
+    'брокколи': 'Овощи',
+    'чеснок': 'Овощи',
+    'морковь': 'Овощи',
+    'лук': 'Овощи',
+    'огурец': 'Овощи',
+    'спаржа': 'Овощи',
+    'лимон': 'Фрукты',
+    'авокадо': 'Фрукты',
+    'голубика': 'Ягоды',
+    'ягода': 'Ягоды',
+    'миндаль': 'Орехи',
+    'гречневая крупа': 'Крупы',
+    'гречка': 'Крупы',
+    'рис': 'Крупы',
+    'овсянка': 'Крупы',
+    'чиа': 'Крупы',
+    'лапша': 'Макароны'
+  };
+  const CATEGORY_ORDER = ['Крупы','Макароны','Мясо','Рыба','Овощи','Фрукты','Молочные продукты','Яйца','Орехи','Ягоды','Зелень','Специи','Соусы','Прочее'];
+  const categorySortIndex = (cat) => {
+    const idx = CATEGORY_ORDER.indexOf(cat);
+    return idx === -1 ? 999 : idx;
+  };
+  const tagCategory = (tag) => TAG_CATEGORY_MAP[(tag||'').toLowerCase()] || 'Прочее';
+
+  // Render tag chips (grouped by category, alphabetic in each)
   function renderChips() {
     if (!chipsBox) return;
-    chipsBox.innerHTML = allTags.map(tag => `
-      <button class="chip ${selectedTags.includes(tag)?'selected':''}" data-tag="${tag}">${capitalize(tag)}</button>
-    `).join('');
+    const groups = {};
+    allTags.forEach(tag => {
+      const cat = tagCategory(tag);
+      groups[cat] = groups[cat] || [];
+      groups[cat].push(tag);
+    });
+
+    const sortedCats = Object.keys(groups).sort((a,b) => {
+      const byOrder = categorySortIndex(a) - categorySortIndex(b);
+      return byOrder !== 0 ? byOrder : a.localeCompare(b, 'ru');
+    });
+
+    const html = sortedCats.map(cat => {
+      const tags = groups[cat].sort((a,b) => a.localeCompare(b, 'ru'));
+      const chips = tags.map(tag => `<button class="chip ${selectedTags.includes(tag)?'selected':''}" data-tag="${tag}">${capitalize(tag)}</button>`).join('');
+      return `<div class="ingredients-category"><h4 class="ingredients-category-title">${cat}</h4><div class="chips-container">${chips}</div></div>`;
+    }).join('');
+
+    chipsBox.innerHTML = html;
+
     // Обновляем счётчик выбранных ингредиентов
     if (ingredientsCountEl) ingredientsCountEl.textContent = String(selectedTags.length);
+
     chipsBox.querySelectorAll('.chip').forEach(btn => {
       btn.addEventListener('click', () => {
         const tag = btn.getAttribute('data-tag');
@@ -295,6 +356,20 @@ document.addEventListener('DOMContentLoaded', () => {
     filterAndRender();
   }));
 
+  // Disable any image zoom or double-click actions on cart and recipe images
+  document.addEventListener('dblclick', (e) => {
+    const t = e.target;
+    if (
+      t.closest('.cart-button') ||
+      t.closest('.recipe-card') ||
+      t.matches('.recipe-card-image') ||
+      t.matches('#modal-recipe-image')
+    ) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  });
+
   // Filtering
   function filterAndRender() {
     const term = searchTerm;
@@ -329,23 +404,29 @@ document.addEventListener('DOMContentLoaded', () => {
     recipesBox.innerHTML = '';
 
     const makeCard = (r) => {
-      const missingLine = (r._missing && r._missing.length) ? `<p>Не хватает: ${r._missing.map(t=>capitalize(t)).join(', ')}</p>` : '';
+      const missingLine = (r._missing && r._missing.length) ? `<p class="recipe-card-missing">Не хватает: ${r._missing.map(t=>capitalize(t)).join(', ')}</p>` : '';
       return `
       <div class="recipe-card" data-id="${r.id}">
+        <img class="recipe-card-image" src="${r.image}" alt="${r.name}">
         <div class="recipe-card-text">
           <h3>${r.name}</h3>
-          <p>${r.category}</p>
-          <p>${r.description || ''}</p>
+          <p class="recipe-card-category">${r.category}</p>
           ${missingLine}
         </div>
-        <img class="recipe-card-image" src="${r.image}" alt="${r.name}">
       </div>`;
     };
 
-    const section = (title, list) => `
-      ${list.length ? `<h3>${title}</h3>` : ''}
-      ${list.map(makeCard).join('')}
-    `;
+    const section = (title, list) => {
+      if (!list.length) return '';
+      return `
+        <section class="recipes-section">
+          <h3 class="recipes-section-title">${title}</h3>
+          <div class="recipes-grid">
+            ${list.map(makeCard).join('')}
+          </div>
+        </section>
+      `;
+    };
 
     recipesBox.innerHTML = section('Подходят полностью', primary) + section('Ещё можно приготовить (не хватает 1–3 ингредиента)', suggested);
 
