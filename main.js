@@ -96,14 +96,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('search-bar');
   const categoryBtns = Array.from(document.querySelectorAll('#category-buttons .category-btn'));
   const recipesBox = document.getElementById('recipes');
-  const profileBox = document.getElementById('profile-view');
-  const profileFavCountEl = document.getElementById('profile-favorites-count');
-  const profileClearFavBtn = document.getElementById('profile-clear-favorites-btn');
   const savedSetsBox = document.getElementById('saved-sets-chips');
   const onlyAvailableCheckbox = document.getElementById('only-available');
 
   // Ingredients modal elements
   const openIngredientsBtn = document.getElementById('open-ingredients-btn');
+  const openFavoritesBtn = document.getElementById('open-favorites-btn');
   const ingredientsModal = document.getElementById('ingredients-modal');
   const closeIngredientsModalBtn = document.getElementById('close-ingredients-modal');
   const selectAllIngredientsBtn = document.getElementById('select-all-ingredients-btn');
@@ -113,75 +111,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const haptic = (style='light') => tg?.HapticFeedback?.impactOccurred(style);
 
-  // Bottom navigation
-  const bottomNav = document.getElementById('bottom-nav');
-  const navHomeBtn = bottomNav?.querySelector('[data-nav="home"]');
-  const navIngredientsBtn = bottomNav?.querySelector('[data-nav="ingredients"]');
-  const navFavoritesBtn = bottomNav?.querySelector('[data-nav="favorites"]');
-  const navProfileBtn = bottomNav?.querySelector('[data-nav="profile"]');
-  const favoritesBadgeEl = bottomNav?.querySelector('#favorites-badge');
-
   let favorites = [];
   try { favorites = JSON.parse(localStorage.getItem('favorites') || '[]'); } catch(e) { favorites = []; }
   let showFavoritesOnly = false;
 
   function updateFavoritesBadge() {
-    if (favoritesBadgeEl) {
-      const count = favorites.length;
-      if (count > 0) {
-        favoritesBadgeEl.textContent = String(count);
-        favoritesBadgeEl.style.display = 'inline-block';
-      } else {
-        favoritesBadgeEl.textContent = '';
-        favoritesBadgeEl.style.display = 'none';
-      }
-    }
-    if (profileFavCountEl) profileFavCountEl.textContent = String(favorites.length);
+    // Верхняя кнопка избранного не использует бейдж, функция оставлена для совместимости.
   }
   updateFavoritesBadge();
-
-  function setActiveNav(key) {
-    const btns = bottomNav ? Array.from(bottomNav.querySelectorAll('.bottom-nav-button')) : [];
-    btns.forEach(b => b.classList.toggle('active', b.getAttribute('data-nav') === key));
-  }
-
-  function showProfileView(show) {
-    if (!profileBox) return;
-    profileBox.style.display = show ? 'block' : 'none';
-    if (show && profileFavCountEl) profileFavCountEl.textContent = String(favorites.length);
-  }
-
-  navHomeBtn?.addEventListener('click', () => {
-    haptic();
-    showFavoritesOnly = false;
-    setActiveNav('home');
-    showProfileView(false);
-    // Сбрасываем базовые фильтры
-    activeCategory = 'Все';
-    searchTerm = '';
-    if (ingredientsModal) ingredientsModal.style.display = 'none';
-    filterAndRender();
-  });
-  navIngredientsBtn?.addEventListener('click', () => {
-    haptic('medium');
-    setActiveNav('ingredients');
-    showProfileView(false);
-    if (ingredientsModal) ingredientsModal.style.display = 'block';
-  });
-  navFavoritesBtn?.addEventListener('click', () => {
-    haptic('medium');
-    showFavoritesOnly = true;
-    setActiveNav('favorites');
-    showProfileView(false);
-    if (ingredientsModal) ingredientsModal.style.display = 'none';
-    filterAndRender();
-  });
-  navProfileBtn?.addEventListener('click', () => {
-    haptic('light');
-    setActiveNav('profile');
-    if (ingredientsModal) ingredientsModal.style.display = 'none';
-    showProfileView(true);
-  });
 
   // Автозагрузка рецептов из Gist
   const AUTO_SYNC_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 часов
@@ -359,12 +296,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Controls
   // Modal open/close
-  // Кнопка открытия модалки ингредиентов сверху удалена; используем нижнее меню.
+  openIngredientsBtn?.addEventListener('click', () => {
+    haptic('medium');
+    if (ingredientsModal) ingredientsModal.style.display = 'block';
+  });
   closeIngredientsModalBtn?.addEventListener('click', () => {
     if (ingredientsModal) ingredientsModal.style.display = 'none';
   });
   window.addEventListener('click', (e) => {
     if (e.target === ingredientsModal) ingredientsModal.style.display = 'none';
+  });
+
+  // Кнопка избранного сверху: переключение режима отображения
+  openFavoritesBtn?.addEventListener('click', () => {
+    haptic('light');
+    showFavoritesOnly = !showFavoritesOnly;
+    openFavoritesBtn.classList.toggle('active', showFavoritesOnly);
+    if (ingredientsModal) ingredientsModal.style.display = 'none';
+    filterAndRender();
   });
 
   // Selection controls inside modal
@@ -429,17 +378,6 @@ document.addEventListener('DOMContentLoaded', () => {
     filterAndRender();
   }));
 
-  // Профиль: очистка избранного
-  profileClearFavBtn?.addEventListener('click', () => {
-    haptic('medium');
-    favorites = [];
-    try { localStorage.setItem('favorites', JSON.stringify(favorites)); } catch(e) {}
-    updateFavoritesBadge();
-    showFavoritesOnly = false;
-    setActiveNav('home');
-    showProfileView(true);
-    filterAndRender();
-  });
 
   // Disable any image zoom or double-click actions on recipe images
   document.addEventListener('dblclick', (e) => {
@@ -523,11 +461,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     recipesBox.innerHTML = section('Подходят полностью', primary) + section('Ещё можно приготовить (не хватает 1–3 ингредиента)', suggested);
 
-    // Если открыт профиль, скрываем список рецептов
-    if (profileBox && profileBox.style.display === 'block') {
-      recipesBox.innerHTML = '';
-      return;
-    }
 
     recipesBox.querySelectorAll('.recipe-card').forEach(card => {
       card.addEventListener('click', () => {

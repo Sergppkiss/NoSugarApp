@@ -506,71 +506,39 @@ form {
 /* Более плотная компоновка чипов внутри категории */
 .ingredients-category .chips-container { margin: 4px 0 6px; }
 
-/* Нижняя панель навигации */
-.bottom-nav {
+/* Удалена нижняя панель навигации и профиль */
+
+/* Плавающая кнопка избранного (чуть меньше, ниже ингредиентов) */
+.favorites-top-button {
   position: fixed;
-  left: 0; right: 0; bottom: 0;
-  height: 56px;
-  padding-bottom: env(safe-area-inset-bottom);
-  background: #ffffff;
-  border-top: 1px solid #eee;
-  display: flex;
-  align-items: center;
-  justify-content: space-around;
-  z-index: 1000;
-}
-.bottom-nav-button {
-  width: 25%;
-  height: 100%;
-  background: none;
-  border: none;
-  display: flex;
-  flex-direction: column;
+  top: 60px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(0,0,0,0.04);
+  border: 1px solid #e5e5e5;
+  color: #444;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
-  color: #777;
-  font-size: 12px;
+  box-shadow: none;
   cursor: pointer;
-  position: relative;
+  z-index: 900;
 }
-.bottom-nav-button .nav-icon { font-size: 18px; line-height: 1; }
-.bottom-nav-button .nav-label { font-size: 11px; }
-.bottom-nav-button.active { color: #56C596; }
-
-/* Бейдж количества избранного в нижнем меню */
-.nav-badge {
-  position: absolute;
-  top: 6px;
-  right: 18px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  border-radius: 8px;
-  background-color: #FF6F61;
-  color: #fff;
-  font-size: 11px;
-  line-height: 16px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-  display: none;
-  pointer-events: none;
+.favorites-top-button:hover { background-color: rgba(0,0,0,0.06); border-color: #d0d0d0; }
+.favorites-top-button.active { border-color: #FF6F61; }
+.favorites-top-button .icon {
+  width: 14px;
+  height: 14px;
+  stroke: #aaa;
+  stroke-width: 1.25;
+  fill: none;
+  opacity: 0.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
-.nav-badge.visible { display: inline-block; }
-
-/* Отступ снизу, чтобы контент не перекрывался меню */
-.container { padding-bottom: 72px; }
-
-/* Раздел профиля */
-.profile-container { margin-top: 16px; }
-.profile-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-  padding: 16px;
-}
-.profile-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
-.profile-actions { display: flex; gap: 10px; margin-top: 10px; }
-.profile-note { color: #666; font-size: 0.9em; margin-top: 8px; }
+.favorites-top-button.active .icon { stroke: #FF6F61; opacity: 0.75; }
 
 /* Чипы продуктов */
 .chips-container {
@@ -684,35 +652,36 @@ form {
   position: fixed;
   top: 12px;
   right: 12px;
-  width: 40px;
-  height: 40px;
-  border: none;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background-color: #56C596;
-  color: #fff;
+  background-color: rgba(0,0,0,0.04);
+  border: 1px solid #e5e5e5;
+  color: #444;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: none;
   cursor: pointer;
   z-index: 900; /* ниже модалок (1000), но поверх контента */
 }
-.cart-button:hover { background-color: #FF6F61; }
+.cart-button:hover { background-color: rgba(0,0,0,0.06); border-color: #d0d0d0; }
 .cart-button .badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 16px;
-  height: 16px;
-  padding: 0 4px;
-  border-radius: 8px;
+  top: -6px;
+  right: -6px;
   background-color: #FF6F61;
   color: #fff;
-  font-size: 11px;
-  line-height: 16px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
-  pointer-events: none;
+  font-size: 12px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: none; /* скрыт, пока count = 0 */
+  align-items: center;
+  justify-content: center;
 }
+.cart-button .badge.show { display: inline-flex; }
 .cart-icon { display: block; }
 
 /* Floating settings gear button (admin) */
