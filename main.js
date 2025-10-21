@@ -96,6 +96,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const searchInput = document.getElementById('search-bar');
   const categoryBtns = Array.from(document.querySelectorAll('#category-buttons .category-btn'));
   const recipesBox = document.getElementById('recipes');
+  const profileBox = document.getElementById('profile-view');
+  const profileFavCountEl = document.getElementById('profile-favorites-count');
+  const profileClearFavBtn = document.getElementById('profile-clear-favorites-btn');
   const savedSetsBox = document.getElementById('saved-sets-chips');
   const onlyAvailableCheckbox = document.getElementById('only-available');
 
@@ -109,6 +112,76 @@ document.addEventListener('DOMContentLoaded', () => {
   const ingredientsCountEl = document.getElementById('ingredients-count');
 
   const haptic = (style='light') => tg?.HapticFeedback?.impactOccurred(style);
+
+  // Bottom navigation
+  const bottomNav = document.getElementById('bottom-nav');
+  const navHomeBtn = bottomNav?.querySelector('[data-nav="home"]');
+  const navIngredientsBtn = bottomNav?.querySelector('[data-nav="ingredients"]');
+  const navFavoritesBtn = bottomNav?.querySelector('[data-nav="favorites"]');
+  const navProfileBtn = bottomNav?.querySelector('[data-nav="profile"]');
+  const favoritesBadgeEl = bottomNav?.querySelector('#favorites-badge');
+
+  let favorites = [];
+  try { favorites = JSON.parse(localStorage.getItem('favorites') || '[]'); } catch(e) { favorites = []; }
+  let showFavoritesOnly = false;
+
+  function updateFavoritesBadge() {
+    if (favoritesBadgeEl) {
+      const count = favorites.length;
+      if (count > 0) {
+        favoritesBadgeEl.textContent = String(count);
+        favoritesBadgeEl.style.display = 'inline-block';
+      } else {
+        favoritesBadgeEl.textContent = '';
+        favoritesBadgeEl.style.display = 'none';
+      }
+    }
+    if (profileFavCountEl) profileFavCountEl.textContent = String(favorites.length);
+  }
+  updateFavoritesBadge();
+
+  function setActiveNav(key) {
+    const btns = bottomNav ? Array.from(bottomNav.querySelectorAll('.bottom-nav-button')) : [];
+    btns.forEach(b => b.classList.toggle('active', b.getAttribute('data-nav') === key));
+  }
+
+  function showProfileView(show) {
+    if (!profileBox) return;
+    profileBox.style.display = show ? 'block' : 'none';
+    if (show && profileFavCountEl) profileFavCountEl.textContent = String(favorites.length);
+  }
+
+  navHomeBtn?.addEventListener('click', () => {
+    haptic();
+    showFavoritesOnly = false;
+    setActiveNav('home');
+    showProfileView(false);
+    // Сбрасываем базовые фильтры
+    activeCategory = 'Все';
+    searchTerm = '';
+    if (ingredientsModal) ingredientsModal.style.display = 'none';
+    filterAndRender();
+  });
+  navIngredientsBtn?.addEventListener('click', () => {
+    haptic('medium');
+    setActiveNav('ingredients');
+    showProfileView(false);
+    if (ingredientsModal) ingredientsModal.style.display = 'block';
+  });
+  navFavoritesBtn?.addEventListener('click', () => {
+    haptic('medium');
+    showFavoritesOnly = true;
+    setActiveNav('favorites');
+    showProfileView(false);
+    if (ingredientsModal) ingredientsModal.style.display = 'none';
+    filterAndRender();
+  });
+  navProfileBtn?.addEventListener('click', () => {
+    haptic('light');
+    setActiveNav('profile');
+    if (ingredientsModal) ingredientsModal.style.display = 'none';
+    showProfileView(true);
+  });
 
   // Автозагрузка рецептов из Gist
   const AUTO_SYNC_INTERVAL_MS = 6 * 60 * 60 * 1000; // 6 часов
@@ -286,10 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Controls
   // Modal open/close
-  openIngredientsBtn?.addEventListener('click', () => {
-    haptic('medium');
-    if (ingredientsModal) ingredientsModal.style.display = 'block';
-  });
+  // Кнопка открытия модалки ингредиентов сверху удалена; используем нижнее меню.
   closeIngredientsModalBtn?.addEventListener('click', () => {
     if (ingredientsModal) ingredientsModal.style.display = 'none';
   });
@@ -303,6 +373,7 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedTags = [...allTags];
     renderChips();
     filterAndRender();
+    if (ingredientsCountEl) ingredientsCountEl.textContent = String(selectedTags.length);
   });
 
   clearIngredientsBtn?.addEventListener('click', () => {
@@ -310,6 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
     selectedTags = [];
     renderChips();
     filterAndRender();
+    if (ingredientsCountEl) ingredientsCountEl.textContent = String(selectedTags.length);
   });
 
   saveIngredientsBtn?.addEventListener('click', async () => {
@@ -317,6 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
     await storage.set(storageKey('selectedTags'), JSON.stringify(selectedTags));
     if (ingredientsModal) ingredientsModal.style.display = 'none';
     filterAndRender();
+    if (ingredientsCountEl) ingredientsCountEl.textContent = String(selectedTags.length);
   });
   selectAllBtn?.addEventListener('click', () => {
     haptic('medium');
@@ -356,11 +429,22 @@ document.addEventListener('DOMContentLoaded', () => {
     filterAndRender();
   }));
 
-  // Disable any image zoom or double-click actions on cart and recipe images
+  // Профиль: очистка избранного
+  profileClearFavBtn?.addEventListener('click', () => {
+    haptic('medium');
+    favorites = [];
+    try { localStorage.setItem('favorites', JSON.stringify(favorites)); } catch(e) {}
+    updateFavoritesBadge();
+    showFavoritesOnly = false;
+    setActiveNav('home');
+    showProfileView(true);
+    filterAndRender();
+  });
+
+  // Disable any image zoom or double-click actions on recipe images
   document.addEventListener('dblclick', (e) => {
     const t = e.target;
     if (
-      t.closest('.cart-button') ||
       t.closest('.recipe-card') ||
       t.matches('.recipe-card-image') ||
       t.matches('#modal-recipe-image')
@@ -376,26 +460,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const showAll = selectedTags.length === allTags.length || selectedTags.length === 0;
 
     let pool = recipes.filter(r => (
-      activeCategory === 'Все' || r.category === activeCategory
-    ) && r.name.toLowerCase().includes(term));
+      (activeCategory === 'Все' || r.category === activeCategory) &&
+      r.name.toLowerCase().includes(term)
+    ));
 
     let primary = [];
-    let suggested = [];
+  let suggested = [];
 
-    if (showAll) {
-      primary = pool;
-    } else {
-      pool.forEach(r => {
-        const tags = r.tags || [];
-        const missing = tags.filter(t => !selectedTags.includes(t));
-        if (missing.length === 0) primary.push(r);
-        else if (missing.length <= 3) suggested.push({...r, _missing: missing});
-      });
-    }
+  if (showFavoritesOnly) {
+    // Показываем только избранные рецепты
+    primary = pool.filter(r => favorites.includes(r.id));
+    suggested = [];
+  } else if (showAll) {
+    primary = pool;
+  } else {
+    pool.forEach(r => {
+      const tags = r.tags || [];
+      const missing = tags.filter(t => !selectedTags.includes(t));
+      if (missing.length === 0) primary.push(r);
+      else if (missing.length <= 3) suggested.push({...r, _missing: missing});
+    });
+  }
 
-    if (onlyAvailable) suggested = [];
+  if (onlyAvailable) suggested = [];
 
-    renderRecipes(primary, suggested);
+  renderRecipes(primary, suggested);
   }
 
   // Render recipes and suggestions
@@ -405,8 +494,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const makeCard = (r) => {
       const missingLine = (r._missing && r._missing.length) ? `<p class="recipe-card-missing">Не хватает: ${r._missing.map(t=>capitalize(t)).join(', ')}</p>` : '';
+      const isFav = favorites.includes(r.id);
       return `
       <div class="recipe-card" data-id="${r.id}">
+        <button class="favorite-toggle ${isFav ? 'active' : ''}" data-id="${r.id}" aria-label="Добавить в избранное">
+          <span class="fav-icon">${isFav ? '⭐' : '☆'}</span>
+        </button>
         <img class="recipe-card-image" src="${r.image}" alt="${r.name}">
         <div class="recipe-card-text">
           <h3>${r.name}</h3>
@@ -430,6 +523,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     recipesBox.innerHTML = section('Подходят полностью', primary) + section('Ещё можно приготовить (не хватает 1–3 ингредиента)', suggested);
 
+    // Если открыт профиль, скрываем список рецептов
+    if (profileBox && profileBox.style.display === 'block') {
+      recipesBox.innerHTML = '';
+      return;
+    }
+
     recipesBox.querySelectorAll('.recipe-card').forEach(card => {
       card.addEventListener('click', () => {
         const id = Number(card.dataset.id);
@@ -437,6 +536,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (recipe) openModal(recipe);
       });
     });
+
+    // Обработчик кнопки избранного на карточке
+    recipesBox.querySelectorAll('.favorite-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const id = Number(btn.getAttribute('data-id'));
+        const isFav = favorites.includes(id);
+        if (isFav) {
+          favorites = favorites.filter(x => x !== id);
+        } else {
+          favorites.push(id);
+        }
+        try { localStorage.setItem('favorites', JSON.stringify(favorites)); } catch(e) {}
+         btn.classList.toggle('active', !isFav);
+         const icon = btn.querySelector('.fav-icon');
+         if (icon) icon.textContent = !isFav ? '⭐' : '☆';
+         updateFavoritesBadge();
+         // Если открыт режим "Избранное", обновляем список
+         if (showFavoritesOnly) filterAndRender();
+       });
+     });
   }
 
   // Modal

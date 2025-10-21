@@ -7,12 +7,6 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <button id="open-ingredients-btn" class="cart-button" aria-label="Выбор ингредиентов">
-    <svg class="cart-icon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-      <path fill="currentColor" d="M7 18c-.83 0-1.5.67-1.5 1.5S6.17 21 7 21s1.5-.67 1.5-1.5S7.83 18 7 18zm10 0c-.83 0-1.5.67-1.5 1.5S16.17 21 17 21s1.5-.67 1.5-1.5S17.83 18 17 18zM7.16 14.26h9.91c.68 0 1.27-.43 1.47-1.07l2.05-6.62A1.25 1.25 0 0 0 19.39 5H6.21L5.79 3.65A1.25 1.25 0 0 0 4.6 2.8H3a1 1 0 1 0 0 2h1.06l3.03 9.1c.2.64.79 1.06 1.47 1.06zM6.62 7h11.93l-1.64 5.3H7.95L6.62 7z"/>
-    </svg>
-    <span id="ingredients-count" class="badge">0</span>
-  </button>
   <div class="container">
     <h1>Рецепты</h1>
     
@@ -39,7 +33,38 @@
     </div>
 
     <div id="recipes" class="recipes-container"></div>
+
+    <div id="profile-view" class="profile-container" style="display:none;">
+      <h2>Профиль</h2>
+      <div class="profile-card">
+        <div class="profile-row"><span>Избранных рецептов:</span> <span id="profile-favorites-count">0</span></div>
+        <div class="profile-actions">
+          <button id="profile-clear-favorites-btn" class="button secondary">Очистить избранное</button>
+        </div>
+      </div>
+      <p class="profile-note">Раздел профиля в разработке</p>
+    </div>
   </div>
+
+  <nav id="bottom-nav" class="bottom-nav" aria-label="Нижнее меню">
+    <button class="bottom-nav-button active" data-nav="home" aria-label="Главная">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Главная</span>
+    </button>
+    <button class="bottom-nav-button" data-nav="ingredients" aria-label="Мои ингредиенты">
+      <span class="nav-icon">🛒</span>
+      <span class="nav-label">Ингредиенты</span>
+    </button>
+    <button class="bottom-nav-button" data-nav="favorites" aria-label="Мои избранные блюда">
+      <span class="nav-icon">⭐</span>
+      <span class="nav-badge" id="favorites-badge"></span>
+      <span class="nav-label">Избранное</span>
+    </button>
+    <button class="bottom-nav-button" data-nav="profile" aria-label="Мой профиль">
+      <span class="nav-icon">👤</span>
+      <span class="nav-label">Профиль</span>
+    </button>
+  </nav>
 
   <!-- Модальное окно рецепта -->
   <div id="recipe-modal" class="modal">
