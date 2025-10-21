@@ -4,6 +4,8 @@ window.recipes = [
         name: 'Омлет с овощами и сыром',
         category: 'Завтрак',
         image: 'images/omelette.jpg',
+        calories: 280,
+        cookingTime: 15,
         ingredients: [
             { name: 'Яйца', quantity: '3 шт' },
             { name: 'Помидор', quantity: '1 шт' },
@@ -19,6 +21,8 @@ window.recipes = [
         name: 'Куриная грудка с брокколи',
         category: 'Обед',
         image: 'images/chicken_broccoli.jpg',
+        calories: 320,
+        cookingTime: 25,
         ingredients: [
             { name: 'Куриная грудка', quantity: '200г' },
             { name: 'Брокколи', quantity: '150г' },
@@ -33,6 +37,8 @@ window.recipes = [
         name: 'Салат с тунцом и авокадо',
         category: 'Ужин',
         image: 'images/tuna_avocado_salad.jpg',
+        calories: 250,
+        cookingTime: 10,
         ingredients: [
             { name: 'Тунец консервированный', quantity: '1 банка' },
             { name: 'Авокадо', quantity: '1 шт' },
@@ -47,6 +53,8 @@ window.recipes = [
         name: 'Творог с ягодами и орехами',
         category: 'Перекус',
         image: 'images/cottage_cheese_berries.jpg',
+        calories: 180,
+        cookingTime: 5,
         ingredients: [
             { name: 'Творог 5%', quantity: '150г' },
             { name: 'Голубика', quantity: '50г' },
@@ -60,6 +68,8 @@ window.recipes = [
         name: 'Чиа-пудинг на кокосовом молоке',
         category: 'Десерт',
         image: 'images/chia_pudding.jpg',
+        calories: 220,
+        cookingTime: 480,
         ingredients: [
             { name: 'Семена чиа', quantity: '3 ст.л.' },
             { name: 'Кокосовое молоко', quantity: '200мл' },
@@ -73,6 +83,8 @@ window.recipes = [
         name: 'Куриный суп с лапшой',
         category: 'Обед',
         image: 'images/chicken_noodle_soup.jpg',
+        calories: 290,
+        cookingTime: 45,
         ingredients: [
             { name: 'Куриное филе', quantity: '300г' },
             { name: 'Яичная лапша', quantity: '50г' },
@@ -87,6 +99,8 @@ window.recipes = [
         name: 'Лосось на пару со спаржей',
         category: 'Ужин',
         image: 'images/salmon_asparagus.jpg',
+        calories: 340,
+        cookingTime: 20,
         ingredients: [
             { name: 'Филе лосося', quantity: '200г' },
             { name: 'Спаржа', quantity: '150г' },
@@ -100,6 +114,8 @@ window.recipes = [
         name: 'Гречневая каша с грибами',
         category: 'Обед',
         image: 'images/buckwheat_mushrooms.jpg',
+        calories: 260,
+        cookingTime: 30,
         ingredients: [
             { name: 'Гречневая крупа', quantity: '100г' },
             { name: 'Шампиньоны', quantity: '100г' },
@@ -113,6 +129,8 @@ window.recipes = [
         name: 'Салат "Греческий"',
         category: 'Ужин',
         image: 'images/greek_salad.jpg',
+        calories: 200,
+        cookingTime: 15,
         ingredients: [
             { name: 'Помидоры', quantity: '2 шт' },
             { name: 'Огурцы', quantity: '1 шт' },
@@ -128,6 +146,8 @@ window.recipes = [
         name: 'Овсяноблин с бананом и творогом',
         category: 'Завтрак',
         image: 'images/oat_pancake.jpg',
+        calories: 310,
+        cookingTime: 12,
         ingredients: [
             { name: 'Овсяные хлопья', quantity: '4 ст.л.' },
             { name: 'Яйцо', quantity: '1 шт' },
@@ -143,6 +163,8 @@ window.recipes = [
         name: 'Запеканка из цветной капусты',
         category: 'Обед',
         image: 'images/cauliflower_casserole.jpg',
+        calories: 240,
+        cookingTime: 35,
         ingredients: [
             { name: 'Цветная капуста', quantity: '400г' },
             { name: 'Яйца', quantity: '2 шт' },
@@ -157,6 +179,8 @@ window.recipes = [
         name: 'Смузи "Зеленый детокс"',
         category: 'Перекус',
         image: 'images/green_smoothie.jpg',
+        calories: 120,
+        cookingTime: 5,
         ingredients: [
             { name: 'Шпинат', quantity: '1 горсть' },
             { name: 'Яблоко', quantity: '1 шт' },

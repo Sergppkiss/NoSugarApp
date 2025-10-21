@@ -23,6 +23,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const saveBtn = document.getElementById('save-btn');
     const clearBtn = document.getElementById('clear-btn');
 
+    // Настройки (иконка/модалка)
+    const openSettingsBtn = document.getElementById('open-settings-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const closeSettingsModalBtn = document.getElementById('close-settings-modal');
+
     // Gist конфиг элементы
     const gistRawInput = document.getElementById('gist-raw-url');
     const tokenInput = document.getElementById('github-token');
@@ -38,6 +43,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Контейнер для списка рецептов
     const adminRecipesList = document.getElementById('admin-recipes-list');
+
+    // Открытие/закрытие модалки настроек
+    openSettingsBtn?.addEventListener('click', () => {
+        if (settingsModal) settingsModal.style.display = 'block';
+    });
+    closeSettingsModalBtn?.addEventListener('click', () => {
+        if (settingsModal) settingsModal.style.display = 'none';
+    });
+    window.addEventListener('click', (e) => {
+        if (e.target === settingsModal) settingsModal.style.display = 'none';
+    });
 
     // Хранилище конфига (CloudStorage -> localStorage)
     const Cloud = tg?.CloudStorage;
@@ -138,87 +154,128 @@ document.addEventListener('DOMContentLoaded', () => {
         recipes = window.recipes;
     }
 
-    function displayAdminRecipes() {
-        adminRecipesList.innerHTML = '';
-        recipes.forEach(recipe => {
-            const recipeElement = document.createElement('div');
-            recipeElement.classList.add('admin-recipe-item');
-            recipeElement.innerHTML = `
-                <span>${recipe.name}</span>
-                <div class="admin-recipe-buttons">
-                    <button class="edit-btn" data-id="${recipe.id}">Редактировать</button>
-                    <button class="delete-btn" data-id="${recipe.id}">Удалить</button>
-                </div>
-            `;
-            adminRecipesList.appendChild(recipeElement);
-        });
-        addEventListenersToButtons();
-    }
-
     function saveRecipes() {
         localStorage.setItem('recipes', JSON.stringify(recipes));
     }
 
-    function clearForm() {
-        formTitle.textContent = 'Добавить новый рецепт';
-        recipeIdInput.value = '';
-        form.reset();
-    }
-
-    function populateFormForEdit(id) {
-        const recipe = recipes.find(r => r.id == id);
-        if (recipe) {
-            formTitle.textContent = 'Редактировать рецепт';
-            recipeIdInput.value = recipe.id;
-            recipeNameInput.value = recipe.name;
-            recipeCategoryInput.value = recipe.category;
-            recipeDescriptionInput.value = recipe.description;
-            recipeTagsInput.value = (recipe.tags||[]).join(', ');
-            recipeImageInput.value = recipe.image;
-            window.scrollTo(0, 0);
-        }
-    }
-
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const recipeId = recipeIdInput.value;
-        const recipeData = {
-            name: recipeNameInput.value,
-            category: recipeCategoryInput.value,
-            description: recipeDescriptionInput.value,
-            tags: recipeTagsInput.value.split(',').map(tag => tag.trim().toLowerCase()).filter(Boolean),
-            image: recipeImageInput.value,
-        };
-        if (recipeId) {
-            const index = recipes.findIndex(r => r.id == recipeId);
-            recipes[index] = { ...recipes[index], ...recipeData };
-        } else {
-            recipeData.id = Date.now();
-            recipes.push(recipeData);
-        }
-        saveRecipes();
-        displayAdminRecipes();
-        clearForm();
-    });
-
-    function addEventListenersToButtons() {
-        document.querySelectorAll('.edit-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const id = e.target.dataset.id;
-                populateFormForEdit(id);
+    function displayAdminRecipes() {
+        const listEl = adminRecipesList;
+        listEl.innerHTML = '';
+        (recipes || []).forEach((r, idx) => {
+            const item = document.createElement('div');
+            item.className = 'recipe-item-admin';
+            item.innerHTML = `
+                <span>${idx+1}. ${r.name}</span>
+                <div>
+                    <button class="edit-btn">Редактировать</button>
+                    <button class="delete-btn">Удалить</button>
+                </div>
+            `;
+            item.querySelector('.edit-btn').addEventListener('click', () => {
+                fillFormForEdit(r, idx);
             });
-        });
-        document.querySelectorAll('.delete-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const id = e.target.dataset.id;
-                if (confirm('Вы уверены, что хотите удалить этот рецепт?')) {
-                    recipes = recipes.filter(r => r.id != id);
+            item.querySelector('.delete-btn').addEventListener('click', () => {
+                if (confirm('Удалить рецепт?')) {
+                    recipes.splice(idx, 1);
                     saveRecipes();
                     displayAdminRecipes();
                 }
             });
+            listEl.appendChild(item);
         });
     }
+
+    function clearForm() {
+        recipeIdInput.value = '';
+        recipeNameInput.value = '';
+        recipeCategoryInput.value = 'Завтрак';
+        recipeDescriptionInput.value = '';
+        recipeTagsInput.value = '';
+        recipeImageInput.value = '';
+        document.getElementById('recipe-calories') && (document.getElementById('recipe-calories').value = '');
+        document.getElementById('recipe-cooking-time') && (document.getElementById('recipe-cooking-time').value = '');
+        document.getElementById('recipe-ingredients') && (document.getElementById('recipe-ingredients').value = '');
+        document.getElementById('recipe-instructions') && (document.getElementById('recipe-instructions').value = '');
+        formTitle.textContent = 'Добавить новый рецепт';
+    }
+
+    function fillFormForEdit(r, idx) {
+        recipeIdInput.value = String(idx);
+        recipeNameInput.value = r.name || '';
+        recipeCategoryInput.value = r.category || 'Завтрак';
+        recipeDescriptionInput.value = r.description || '';
+        recipeTagsInput.value = (r.tags || []).join(', ');
+        recipeImageInput.value = r.image || '';
+
+        // Новые поля
+        const caloriesEl = document.getElementById('recipe-calories');
+        const cookingTimeEl = document.getElementById('recipe-cooking-time');
+        const ingredientsEl = document.getElementById('recipe-ingredients');
+        const instructionsEl = document.getElementById('recipe-instructions');
+        if (caloriesEl) caloriesEl.value = r.calories || '';
+        if (cookingTimeEl) cookingTimeEl.value = r.cookingTime || '';
+        if (ingredientsEl) {
+            const ing = Array.isArray(r.ingredients) ? r.ingredients.join('\n') : (r.ingredients || '');
+            ingredientsEl.value = ing;
+        }
+        if (instructionsEl) instructionsEl.value = r.instructions || '';
+
+        formTitle.textContent = 'Редактировать рецепт';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = recipeNameInput.value.trim();
+        const category = recipeCategoryInput.value;
+        const description = recipeDescriptionInput.value.trim();
+        const tags = recipeTagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
+        const image = recipeImageInput.value.trim();
+        if (!name || !category || !description || tags.length === 0 || !image) {
+            alert('Заполните все поля');
+            return;
+        }
+        const idxRaw = recipeIdInput.value.trim();
+        if (idxRaw) {
+            const idx = Number(idxRaw);
+            if (Number.isFinite(idx) && idx >= 0 && idx < recipes.length) {
+                recipes[idx] = {
+                    ...recipes[idx],
+                    name,
+                    category,
+                    calories: (document.getElementById('recipe-calories')?.value || '').trim(),
+                    cookingTime: (document.getElementById('recipe-cooking-time')?.value || '').trim(),
+                    description,
+                    tags,
+                    ingredients: (document.getElementById('recipe-ingredients')?.value || '')
+                        .split('\n')
+                        .map(t => t.trim())
+                        .filter(Boolean),
+                    instructions: (document.getElementById('recipe-instructions')?.value || '').trim(),
+                    image
+                };
+            }
+        } else {
+            recipes.push({
+                name,
+                category,
+                calories: (document.getElementById('recipe-calories')?.value || '').trim(),
+                cookingTime: (document.getElementById('recipe-cooking-time')?.value || '').trim(),
+                description,
+                tags,
+                ingredients: (document.getElementById('recipe-ingredients')?.value || '')
+                    .split('\n')
+                    .map(t => t.trim())
+                    .filter(Boolean),
+                instructions: (document.getElementById('recipe-instructions')?.value || '').trim(),
+                image
+            });
+        }
+        saveRecipes();
+        displayAdminRecipes();
+        clearForm();
+        alert('Сохранено');
+    });
 
     // Gist helpers
     function parseGistInfo(rawUrl) {

@@ -372,11 +372,39 @@ document.addEventListener('DOMContentLoaded', () => {
     haptic('medium');
     modalImg.src = r.image;
     modalName.textContent = r.name;
+    
+    // Красивое отображение метаинформации с иконками
     const calories = r.calories ? `${r.calories} ккал` : '—';
-    const time = r.cookingTime || '—';
-    modalMeta.textContent = `Категория: ${r.category} • Калорийность: ${calories} • Время: ${time}`;
+    const time = r.cookingTime ? (r.cookingTime >= 60 ? `${Math.floor(r.cookingTime / 60)}ч ${r.cookingTime % 60}мин` : `${r.cookingTime} мин`) : '—';
+    
+    modalMeta.innerHTML = `
+      <div class="meta-info">
+        <div class="meta-item">
+          <span class="icon">🔥</span>
+          <span>${calories}</span>
+        </div>
+        <div class="meta-item">
+          <span class="icon">⏱️</span>
+          <span>${time}</span>
+        </div>
+        <div class="meta-category">${r.category}</div>
+      </div>
+    `;
 
-    modalIng.innerHTML = (r.ingredients || []).map(i => `<li>${i.name}${i.quantity?` — ${i.quantity}`:''}</li>`).join('');
+    // Обработка ингредиентов - поддержка как старого формата (объекты), так и нового (строки)
+    const ingredients = r.ingredients || [];
+    if (Array.isArray(ingredients)) {
+      if (ingredients.length > 0 && typeof ingredients[0] === 'object') {
+        // Старый формат: массив объектов с name и quantity
+        modalIng.innerHTML = ingredients.map(i => `<li>${i.name}${i.quantity ? ` — ${i.quantity}` : ''}</li>`).join('');
+      } else {
+        // Новый формат: массив строк
+        modalIng.innerHTML = ingredients.map(i => `<li>${i}</li>`).join('');
+      }
+    } else {
+      modalIng.innerHTML = '';
+    }
+
     modalTags.innerHTML = (r.tags || []).map(t => `<span class="chip small">${capitalize(t)}</span>`).join('');
     modalInstr.textContent = r.instructions || '';
 

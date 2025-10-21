@@ -7,30 +7,13 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <button id="open-settings-btn" class="settings-button" aria-label="Открыть настройки">
+      <svg class="gear-icon" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+        <path fill="currentColor" d="M12 8a4 4 0 100 8 4 4 0 000-8zm9.4 4a7.7 7.7 0 00-.1-1.3l2.1-1.6-2-3.4-2.5 1a8.8 8.8 0 00-2.2-1.3l-.4-2.7H9.7l-.4 2.7a8.8 8.8 0 00-2.2 1.3l-2.5-1-2 3.4 2.1 1.6c-.1.4-.1.9-.1 1.3s0 .9.1 1.3l-2.1 1.6 2 3.4 2.5-1c.6.5 1.4.9 2.2 1.3l.4 2.7h4.6l.4-2.7c.8-.4 1.6-.8 2.2-1.3l2.5 1 2-3.4-2.1-1.6c.1-.4.1-.9.1-1.3z"/>
+      </svg>
+    </button>
     <div class="container">
         <h1>Админ-панель</h1>
-
-        <div class="gist-config">
-            <h2>Gist конфиг</h2>
-            <label for="gist-raw-url">Gist RAW URL:</label>
-            <input type="text" id="gist-raw-url" placeholder="https://gist.githubusercontent.com/.../raw/recipes.json">
-            <label for="github-token">GitHub Token (scope: gist):</label>
-            <input type="password" id="github-token" placeholder="ghp_...">
-            <div class="form-buttons">
-                <button type="button" id="gist-load-btn">Загрузить из Gist</button>
-                <button type="button" id="gist-save-btn">Сохранить в Gist</button>
-            </div>
-            <div class="auto-sync">
-                <h3>Автосинхронизация</h3>
-                <label class="checkbox-row">
-                    <input type="checkbox" id="gist-auto-sync-always">
-                    Обновлять при каждом запуске
-                </label>
-                <label for="gist-auto-sync-interval">Интервал (часы):</label>
-                <input type="number" id="gist-auto-sync-interval" min="0" step="0.25" placeholder="6">
-                <small class="hint">Если включено обновление при запуске, интервал игнорируется.</small>
-            </div>
-        </div>
 
         <div class="image-config">
             <h2>Фото</h2>
@@ -51,28 +34,58 @@
             <h2 id="form-title">Добавить новый рецепт</h2>
             <form id="recipe-form">
                 <input type="hidden" id="recipe-id">
-                
-                <label for="recipe-name">Название рецепта:</label>
-                <input type="text" id="recipe-name" required>
-                
-                <label for="recipe-category">Категория:</label>
-                <select id="recipe-category" required>
-                    <option value="Завтрак">Завтрак</option>
-                    <option value="Обед">Обед</option>
-                    <option value="Ужин">Ужин</option>
-                    <option value="Десерт">Десерт</option>
-                    <option value="Перекус">Перекус</option>
-                </select>
-                
-                <label for="recipe-description">Описание:</label>
-                <textarea id="recipe-description" rows="4" required></textarea>
-                
-                <label for="recipe-tags">Ингредиенты (через запятую):</label>
-                <input type="text" id="recipe-tags" required>
-                
-                <label for="recipe-image">URL изображения:</label>
-                <input type="text" id="recipe-image" required>
-                
+
+                <div class="form-group">
+                    <label for="recipe-name">Название рецепта:</label>
+                    <input type="text" id="recipe-name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipe-category">Категория:</label>
+                    <select id="recipe-category" required>
+                        <option value="Завтрак">Завтрак</option>
+                        <option value="Обед">Обед</option>
+                        <option value="Ужин">Ужин</option>
+                        <option value="Десерт">Десерт</option>
+                        <option value="Перекус">Перекус</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipe-calories">Калорийность (ккал):</label>
+                    <input type="number" id="recipe-calories" min="0" step="1" placeholder="например: 320">
+                </div>
+
+                <div class="form-group">
+                    <label for="recipe-cooking-time">Время приготовления:</label>
+                    <input type="text" id="recipe-cooking-time" placeholder="например: 30 минут">
+                </div>
+
+                <div class="form-group">
+                    <label for="recipe-description">Короткое описание:</label>
+                    <textarea id="recipe-description" rows="3" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipe-tags">Теги для фильтра (через запятую):</label>
+                    <input type="text" id="recipe-tags" placeholder="например: курица, овощи, без сахара">
+                </div>
+
+                <div class="form-group">
+                    <label for="recipe-ingredients">Ингредиенты:</label>
+                    <textarea id="recipe-ingredients" rows="5" placeholder="Каждый с новой строки: \nМука — 200 г\nЯйцо — 2 шт\nМолоко — 250 мл"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipe-instructions">Описание приготовления:</label>
+                    <textarea id="recipe-instructions" rows="6" placeholder="Опишите шаги приготовления"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipe-image">URL изображения:</label>
+                    <input type="text" id="recipe-image" required>
+                </div>
+
                 <div class="form-buttons">
                     <button type="submit" id="save-btn">Сохранить</button>
                     <button type="button" id="clear-btn">Очистить форму</button>
@@ -86,6 +99,35 @@
                 <!-- Список рецептов будет здесь -->
             </div>
         </div>
+    </div>
+
+    <!-- Модальное окно настроек -->
+    <div id="settings-modal" class="modal" aria-hidden="true">
+      <div class="modal-content">
+        <span class="close-button" id="close-settings-modal">&times;</span>
+        <h2>Настройки</h2>
+        <div class="gist-config">
+            <h3>Gist конфиг</h3>
+            <label for="gist-raw-url">Gist RAW URL:</label>
+            <input type="text" id="gist-raw-url" placeholder="https://gist.githubusercontent.com/.../raw/recipes.json">
+            <label for="github-token">GitHub Token (scope: gist):</label>
+            <input type="password" id="github-token" placeholder="ghp_...">
+            <div class="form-buttons">
+                <button type="button" id="gist-load-btn">Загрузить из Gist</button>
+                <button type="button" id="gist-save-btn">Сохранить в Gist</button>
+            </div>
+            <div class="auto-sync">
+                <h3>Автосинхронизация</h3>
+                <label class="checkbox-row">
+                    <input type="checkbox" id="gist-auto-sync-always">
+                    Обновлять при каждом запуске
+                </label>
+                <label for="gist-auto-sync-interval">Интервал (часы):</label>
+                <input type="number" id="gist-auto-sync-interval" min="0" step="0.25" placeholder="6">
+                <small class="hint">Если включено обновление при запуске, интервал игнорируется.</small>
+            </div>
+        </div>
+      </div>
     </div>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
