@@ -413,6 +413,12 @@ form {
 }
 
 .form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="email"],
+.form-group input[type="tel"],
+.form-group input[type="url"],
+.form-group input[type="search"],
+.form-group input[type="password"],
 .form-group select,
 .form-group textarea {
   width: 100%;
@@ -420,6 +426,7 @@ form {
   border: 1px solid #ccc;
   border-radius: 5px;
   box-sizing: border-box;
+  font-size: 16px; /* предотвращает авто-зуум при фокусе на iOS */
 }
 
 .form-buttons {
@@ -467,6 +474,272 @@ form {
   border-bottom: none;
 }
 
+.recipe-item-admin button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+}
+
+.recipe-item-admin .edit-btn {
+  background-color: #ffc107;
+}
+
+.recipe-item-admin .delete-btn {
+  background-color: #dc3545;
+}
+
+/* Search Bar Styles */
+.search-container {
+  max-width: 600px;
+  margin: 15px auto;
+}
+
+#searchInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 25px;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+/* Стили для страницы продуктов */
+/* Категории ингредиентов в модалке */
+.ingredients-category { margin-bottom: 4px; }
+.ingredients-category-title { margin: 4px 0 4px; font-weight: 600; color: #474747; }
+/* Более плотная компоновка чипов внутри категории */
+.ingredients-category .chips-container { margin: 4px 0 6px; }
+
+/* Удалена нижняя панель навигации и профиль */
+
+/* Плавающая кнопка избранного (чуть меньше, ниже ингредиентов) */
+.favorites-top-button {
+  position: fixed;
+  top: 60px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: rgba(0,0,0,0.04);
+  border: 1px solid #e5e5e5;
+  color: #444;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  cursor: pointer;
+  z-index: 900;
+}
+.favorites-top-button:hover { background-color: rgba(0,0,0,0.06); border-color: #d0d0d0; }
+.favorites-top-button.active { border-color: #FF6F61; }
+.favorites-top-button .icon {
+  width: 14px;
+  height: 14px;
+  stroke: #aaa;
+  stroke-width: 1.25;
+  fill: none;
+  opacity: 0.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.favorites-top-button.active .icon { stroke: #FF6F61; opacity: 0.75; }
+
+/* Чипы продуктов */
+.chips-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 20px;
+}
+/* Каждая категория на отдельной строке внутри внешнего контейнера чипов */
+.chips-container > .ingredients-category { flex: 0 0 100%; width: 100%; }
+.chip {
+  background: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.chip:hover { background: #e8e8e8; }
+.chip.selected { background: #56C596; color: #fff; border-color: #56C596; }
+.chip.small { font-size: 12px; padding: 4px 8px; }
+
+/* Кнопки управления */
+.button {
+  background-color: #56C596;
+  border: none;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 18px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: background-color 0.2s ease;
+}
+.button:hover { background-color: #FF6F61; }
+ 
+ /* UI тегов в админке */
+ .tags-controls { display: flex; gap: 8px; margin-top: 8px; }
+ .tags-controls input { flex: 1; }
+ 
+ /* Контейнер продуктов */
+ #products-panel { margin-bottom: 10px; }
+ .products-controls { margin-bottom: 10px; }
+
+.product-button {
+    padding: 10px 15px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.product-button.selected {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+}
+
+#filter-recipes-btn {
+    display: block;
+    width: 200px;
+    margin: 20px auto;
+    padding: 15px;
+    font-size: 16px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.back-button {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 15px;
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.controls .button {
+     padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color .3s;
+    margin-right: 10px;
+}
+
+.controls .button:hover {
+    background-color: #0056b3;
+}
+
+/* Saved sets and toggle */
+.saved-sets { margin-top: 10px; }
+.saved-sets-label { display: inline-block; margin-bottom: 6px; color: #474747; font-weight: 600; }
+.toggle { display: inline-flex; align-items: center; gap: 6px; margin-left: 8px; }
+.toggle input { transform: scale(1.1); }
+
+/* Floating ingredients cart button */
+.cart-button {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(0,0,0,0.04);
+  border: 1px solid #e5e5e5;
+  color: #444;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+  cursor: pointer;
+  z-index: 900; /* ниже модалок (1000), но поверх контента */
+}
+.cart-button:hover { background-color: rgba(0,0,0,0.06); border-color: #d0d0d0; }
+.cart-button .badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background-color: #FF6F61;
+  color: #fff;
+  font-size: 12px;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  display: none; /* скрыт, пока count = 0 */
+  align-items: center;
+  justify-content: center;
+}
+.cart-button .badge.show { display: inline-flex; }
+.cart-icon { display: block; }
+
+/* Floating settings gear button (admin) */
+.settings-button {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background-color: #6c757d;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  cursor: pointer;
+  z-index: 900; /* ниже модалок (1000), но поверх контента */
+}
+.settings-button:hover { background-color: #FF6F61; }
+.gear-icon { display: block; }
+/* Admin bottom navigation */
+.admin-page .admin-bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 56px;
+  background: #fff;
+  border-top: 1px solid #e5e5e5;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  z-index: 900;
+}
+.admin-bottom-button {
+  background: none;
+  border: none;
+  color: #474747;
+  font-size: 14px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+}
+.admin-bottom-button:hover { background-color: rgba(0,0,0,0.06); }
+.admin-bottom-button.active { color: #FF6F61; font-weight: 600; }
+
+/* Padding bottom for admin container to avoid nav overlap */
+.admin-page .container { padding-bottom: 72px; }
 .recipe-item-admin button {
   margin-left: 10px;
   padding: 5px 10px;

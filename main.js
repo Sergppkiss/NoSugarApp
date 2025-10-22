@@ -147,11 +147,26 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(rawUrl, { cache: 'no-store' });
       if (!res.ok) return console.warn('Auto Gist fetch failed:', res.status);
       const data = await res.json();
-      if (!Array.isArray(data)) return console.warn('Gist JSON expected array');
-      localStorage.setItem('recipes', JSON.stringify(data));
+      // Поддержка нового формата: либо массив рецептов, либо объект { recipes, tagCategoryState }
+      let newRecipes = null;
+      if (Array.isArray(data)) {
+        newRecipes = data;
+      } else if (data && Array.isArray(data.recipes)) {
+        newRecipes = data.recipes;
+        const tcs = data.tagCategoryState;
+        if (tcs && tcs.tagCategoryMapping && tcs.categoryList) {
+          try {
+            localStorage.setItem('tagCategoryMapping', JSON.stringify(tcs.tagCategoryMapping));
+            localStorage.setItem('tagCategoryList', JSON.stringify(tcs.categoryList));
+          } catch(_) {}
+        }
+      } else {
+        return console.warn('Gist JSON expected array or {recipes} object');
+      }
+      localStorage.setItem('recipes', JSON.stringify(newRecipes));
       localStorage.setItem('lastGistSync', String(Date.now()));
-      applyRecipes(data);
-      console.log('Recipes auto-loaded from Gist:', data.length);
+      applyRecipes(newRecipes);
+      console.log('Recipes auto-loaded from Gist:', Array.isArray(newRecipes) ? newRecipes.length : 0);
     } catch (e) {
       console.warn('Auto-load from Gist error', e);
     }
